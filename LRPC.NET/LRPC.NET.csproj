@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+	<LangVersion>10.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Library\Dynamitey\InlineLambdas.tt" />
+    <None Remove="Library\Dynamitey\Internal\Optimization\InvokeHelper.tt" />
+    <None Remove="Library\Dynamitey\ThisFunctions.tt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="Http\Content\FileContent.cs" />
+    <ApplicationDefinition Include="Http\Content\StreamContent.cs" />
+    <ApplicationDefinition Include="Http\Content\StringContent.cs" />
+    <ApplicationDefinition Include="Http\HttpContent.cs" />
+    <ApplicationDefinition Include="Http\HttpRequest.cs" />
+    <ApplicationDefinition Include="Http\HttpRequestContent.cs" />
+    <ApplicationDefinition Include="Http\HttpRequestUser.cs" />
+    <ApplicationDefinition Include="Http\HttpResponse.cs" />
+    <ApplicationDefinition Include="Http\HttpRouteRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Library\Dynamitey\InlineLambdas.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>InlineLambdas.cs</LastGenOutput>
+    </Compile>
+    <Compile Include="Library\Dynamitey\Internal\Optimization\InvokeHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>InvokeHelper.cs</LastGenOutput>
+    </Compile>
+    <Compile Include="Library\Dynamitey\ThisFunctions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ThisFunctions.cs</LastGenOutput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+</Project>

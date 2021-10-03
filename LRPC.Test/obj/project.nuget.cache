@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "M7ehHpoJlbC3EzWlLDKatW4PwiItmyTOdA4sI4c4gLQwqUngnDEHfcslIuyvu2FisPSi5565dNdsOcQ3vDrViQ==",
+  "success": true,
+  "projectFilePath": "V:\\Csharp\\LRPC.NET\\LRPC.Test\\LRPC.Test.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\soju_\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\soju_\\.nuget\\packages\\system.text.json\\5.0.2\\system.text.json.5.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}
