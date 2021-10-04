@@ -8,7 +8,6 @@ namespace LRPC.NET.Http {
         readonly HttpListener Http = new();
         readonly CancellationTokenSource Cancel = new();
         bool disposed;
-        int maxConcurrentRequests = 10;
 
         /// <summary>
         /// Http 서버를 만듭니다.
@@ -33,63 +32,28 @@ namespace LRPC.NET.Http {
         void Init(string[] prefixes) {
             foreach (var prefixe in prefixes)
                 Http.Prefixes.Add(prefixe);
+            RouteRepository = new(this);
         }
 
         /// <summary>
         /// 비동기로 시작합니다.
         /// </summary>
-        public void BeginListen() => BeginListen(10);
-
-        /// <summary>
-        /// 비동기로 시작합니다.
-        /// </summary>
-        /// <param name="maxConcurrentRequests">최대 동시 요청 처리 수</param>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="OperationCanceledException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public void BeginListen(int maxConcurrentRequests) {
+        public void BeginListen() {
             if (disposed) throw new ObjectDisposedException(nameof(Http));
             if (Http.IsListening) throw new NotSupportedException("The server is already running.");
-            this.maxConcurrentRequests = maxConcurrentRequests;
             Task.Factory.StartNew(ListenAsync);
         }
 
-        #region ListenAsync 확장
-
         /// <summary>
         /// 서버를 시작합니다.
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="OperationCanceledException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public Task ListenAsync() => ListenAsync(default(CancellationToken));
-
-        /// <summary>
-        /// 서버를 시작합니다.
-        /// </summary>
-        /// <param name="maxConcurrentRequests">최대 동시 요청 처리 수</param>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
-        /// <exception cref="NotSupportedException"></exception>
-        public Task ListenAsync(int maxConcurrentRequests) {
-            this.maxConcurrentRequests = maxConcurrentRequests;
-            return ListenAsync();
-        }
-
-        /// <summary>
-        /// 서버를 시작합니다.
-        /// </summary>
-        /// <param name="maxConcurrentRequests">최대 동시 요청 처리 수</param>
-        /// <param name="token">취소 토큰</param>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
-        /// <exception cref="NotSupportedException"></exception>
-        public Task ListenAsync(int maxConcurrentRequests, CancellationToken token) {
-            this.maxConcurrentRequests = maxConcurrentRequests;
-            return ListenAsync(token);
-        }
-
-        #endregion
+        public Task ListenAsync() => ListenAsync(default);
 
         /// <summary>
         /// 서버를 시작합니다.
@@ -118,15 +82,19 @@ namespace LRPC.NET.Http {
                 if (t is Task<HttpListenerContext> task) {
                     var context = task.Result;
                     requests.Add(OnRequestAsync(context));
-                    requests.Add(Http.GetContextAsync());
+
+                    if(requests.Count - webSocketConnectionsCount > maxConcurrentRequests) continue;
+
+                    for (int i = 0; i < maxConcurrentRequests - (requests.Count - webSocketConnectionsCount); i++)
+                        requests.Add(Http.GetContextAsync());
                 }
             }
+            
+            void _OnRequestSetWS(Task func) =>
+                requests?.Remove(func);
         }
 
-        /// <summary>
-        /// 최대 동시 요청 처리
-        /// </summary>
-        public int MaxConcurrentRequests => maxConcurrentRequests;
+        public HttpListener Base => Http;
 
         /// <summary>
         /// 이미 제거되었는지

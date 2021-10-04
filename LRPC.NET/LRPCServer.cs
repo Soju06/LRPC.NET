@@ -1,131 +1,43 @@
-﻿using System.Net;
+﻿global using LRPC.NET.Http;
+global using System.Web;
+global using System.Net;
+global using System.Text.Json;
 
 namespace LRPC.NET {
     /// <summary>
     /// LRPC 서버
     /// </summary>
     public partial class LRPCServer : IDisposable {
-        readonly HttpListener Http = new();
-        readonly CancellationTokenSource Cancel = new();
+        readonly HttpServer http;
         bool disposed;
-        int maxConcurrentRequests = 10;
 
         /// <summary>
         /// LRPC 서버를 만듭니다.
-        /// 기본 주소는 http://localhost:80/ 입니다.
+        /// 기본 주소는 http://localhost:8080/ 입니다.
         /// </summary>
-        public LRPCServer() =>
-            Init(new[] { "http://localhost:80/" });
+        public LRPCServer() {
+            http = new HttpServer();
+            Init();
+        }
 
         /// <summary>
         /// LRPC 서버를 만듭니다.
-        /// 기본 주소는 http://localhost:80/ 입니다.
+        /// 기본 주소는 http://localhost:8080/ 입니다.
         /// </summary>
         /// <param name="prefixes">접두사</param>
-        /// <example>
-        /// <code>
-        /// var server = new LRPCServer("http://localhost:8080/");
-        /// </code>
-        /// </example>
-        public LRPCServer(params string[] prefixes) =>
-            Init(prefixes.Length < 1 ? new[] { "http://*:80/" } : prefixes);
+        public LRPCServer(params string[] prefixes) { 
+            http = new HttpServer(prefixes);
+            Init(); 
+        }
 
-        void Init(string[] prefixes) {
-            foreach (var prefixe in prefixes)
-                Http.Prefixes.Add(prefixe);
+        void Init() {
+            InitHttp();
         }
 
         /// <summary>
-        /// 비동기로 시작합니다.
+        /// Http 서버
         /// </summary>
-        public void BeginListen() => BeginListen(10);
-
-        /// <summary>
-        /// 비동기로 시작합니다.
-        /// </summary>
-        /// <param name="maxConcurrentRequests">최대 동시 요청 처리 수</param>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
-        public void BeginListen(int maxConcurrentRequests) {
-            if (disposed) throw new ObjectDisposedException(nameof(Http));
-            if (Http.IsListening) return;
-            Http.Start();
-            this.maxConcurrentRequests = maxConcurrentRequests;
-            Task.Factory.StartNew(ListenAsync);
-        }
-
-        #region ListenAsync 확장
-
-        /// <summary>
-        /// 서버를 시작합니다.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
-        public Task ListenAsync() => ListenAsync(default(CancellationToken));
-        
-        /// <summary>
-        /// 서버를 시작합니다.
-        /// </summary>
-        /// <param name="maxConcurrentRequests">최대 동시 요청 처리 수</param>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
-        public Task ListenAsync(int maxConcurrentRequests) {
-            this.maxConcurrentRequests = maxConcurrentRequests;
-            return ListenAsync();
-        }
-
-        /// <summary>
-        /// 서버를 시작합니다.
-        /// </summary>
-        /// <param name="maxConcurrentRequests">최대 동시 요청 처리 수</param>
-        /// <param name="token">취소 토큰</param>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
-        public Task ListenAsync(int maxConcurrentRequests, CancellationToken token) {
-            this.maxConcurrentRequests = maxConcurrentRequests;
-            return ListenAsync(token);
-        }
-
-        #endregion
-
-        /// <summary>
-        /// 서버를 시작합니다.
-        /// </summary>
-        /// <param name="token">취소 토큰</param>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
-        public async Task ListenAsync(CancellationToken token) {
-            var requests = new HashSet<Task>();
-            var ctoken = Cancel.Token;
-            for (int i = 0; i < maxConcurrentRequests; i++)
-                requests.Add(Http.GetContextAsync());
-
-            token.ThrowIfCancellationRequested();
-            ctoken.ThrowIfCancellationRequested();
-
-            while (Http.IsListening) {
-                token.ThrowIfCancellationRequested();
-                ctoken.ThrowIfCancellationRequested();
-                var t = await Task.WhenAny(requests);
-                requests.Remove(t);
-
-                if (t is Task<HttpListenerContext> task) {
-                    var context = task.Result;
-                    requests.Add(OnRequestAsync(context));
-                    requests.Add(Http.GetContextAsync());
-                }
-            }
-        }
-
-        /// <summary>
-        /// 최대 동시 요청
-        /// </summary>
-        public int MaxConcurrentRequests => maxConcurrentRequests;
-
-        /// <summary>
-        /// 이미 제거되었는지
-        /// </summary>
-        public bool IsDisposed => disposed;
+        public HttpServer Http => http;
 
         /// <summary>
         /// 서버를 종료하고, 개체를 제거합니다.
@@ -133,17 +45,18 @@ namespace LRPC.NET {
         public void Close() =>
             Dispose();
 
+        /// <summary>
+        /// 제거되었는지
+        /// </summary>
+        public bool IsDisposed => disposed;
+
         protected virtual void Dispose(bool disposing) {
             if (!disposed) {
                 if (disposing) {
-                    if(Cancel?.IsCancellationRequested != true)
-                        Cancel?.Cancel();
-                    if (Http.IsListening)
-                        Http?.Close();
-                    Cancel?.Dispose();
+                    http?.Close();
                 }
 
-                disposed = true;
+               disposed = true;
             }
         }
 

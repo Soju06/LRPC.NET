@@ -1,7 +1,7 @@
 ﻿/* ========= Soju06 I LOVE PYTHON =========
  * RUNTIME: .NET Framework 4.7.2 | .NET Core 5.0 || Csharp 9.0
  * NAMESPACE: _
- * VERSION: 39
+ * VERSION: 40
  * LICENSE: MIT
  * Copyright by Soju06
  * ========= Soju06 I LOVE PYTHON ========= */
@@ -21,6 +21,7 @@ global using System.Collections.Generic;
 #pragma warning disable IDE0079 // 불필요한 비표시 오류(Suppression) 제거
 #pragma warning disable IDE0056 // 인덱스 연산자 사용
 #pragma warning disable CS8632 // nullable 참조 형식에 대한 주석은 코드에서 '#nullable' 주석 컨텍스트 내에만 사용되어야 합니다.
+#pragma warning disable IDE1006 // 명명 스타일
 
 #pragma warning disable CS0105 // using 지시문을 이전에 이 네임스페이스에서 사용했습니다.
 using System;
@@ -36,7 +37,7 @@ using System.Web;
 #pragma warning restore CS0105 // using 지시문을 이전에 이 네임스페이스에서 사용했습니다.
 
 internal static class ILovePython {
-    public const long _I_LOVE_PYTHON_VERSION_ = 39;
+    public const long _I_LOVE_PYTHON_VERSION_ = 40;
 
     #region Enumerable
     
@@ -92,6 +93,31 @@ internal static class ILovePython {
 
     #endregion
 
+    #region List
+
+    public static TItem add<TItem>(this IList<TItem> items, TItem item) {
+        items.Add(item);
+        return item;
+    }
+    
+    public static IEnumerable<TItem> addRange<TItem>(this List<TItem> items, IEnumerable<TItem> aitems) {
+        items.AddRange(aitems);
+        return aitems;
+    }
+
+    public static IList<TItem> ReturnAdd<TItem>(this IList<TItem> items, TItem item) {
+        items.Add(item);
+        return items;
+    }
+    
+    public static List<TItem> ReturnAddRange<TItem>(this List<TItem> items, IEnumerable<TItem> aitems) {
+        items.AddRange(aitems);
+        return items;
+    }
+
+
+    #endregion
+
     #region String
 
     public static bool IsNullOrWhiteSpace(this string s) => string.IsNullOrWhiteSpace(s);
@@ -101,6 +127,8 @@ internal static class ILovePython {
         (encoding ?? Encoding.UTF8).GetBytes(s);
     public static string Decode(this byte[] s, Encoding encoding = null) =>
         (encoding ?? Encoding.UTF8).GetString(s);
+    public static string Decode(this byte[] s, int index, int count, Encoding encoding = null) =>
+        (encoding ?? Encoding.UTF8).GetString(s, index, count);
     public static byte[] DecodeBase64(this string s) =>
         System.Convert.FromBase64String(s);
     public static string EncodeBase64(this string s, Encoding encoding = null) =>
@@ -638,3 +666,4 @@ internal class Object<T, T2, T3, T4, T5> {
 #pragma warning restore IDE0056 // 인덱스 연산자 사용
 #pragma warning restore CS8632 // nullable 참조 형식에 대한 주석은 코드에서 '#nullable' 주석 컨텍스트 내에만 사용되어야 합니다.
 #pragma warning restore IDE0079 // 불필요한 비표시 오류(Suppression) 제거
+#pragma warning restore IDE1006 // 명명 스타일

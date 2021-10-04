@@ -1,10 +1,13 @@
-﻿using System.Net;
-
-namespace LRPC.NET.Http {
+﻿namespace LRPC.NET.Http {
     /// <summary>
     /// 라우트 저장소
     /// </summary>
     public class HttpRouteRepository {
+        HttpServer Server;
+        internal HttpRouteRepository(HttpServer server) {
+            Server = server;
+        }
+
         /// <summary>
         /// GET
         /// </summary>
@@ -21,10 +24,6 @@ namespace LRPC.NET.Http {
         /// DELETE
         /// </summary>
         public Dictionary<string, RouteFunc> DeleteRoutes { get; private set; } = new();
-
-        internal HttpRouteRepository() {
-
-        }
         
         /// <summary>
         /// GET
@@ -49,6 +48,20 @@ namespace LRPC.NET.Http {
         /// </summary>
         public void Delete(string endpoint, RouteFunc handler) =>
             DeleteRoutes.Add(endpoint, handler);
+
+        /// <summary>
+        /// 라우터를 로드합니다
+        /// </summary>
+        /// <param name="router">라우터</param>
+        public void Route(IRouter router) =>
+            router.Load(Server, this);
+
+        /// <summary>
+        /// 라우터를 언로드합니다
+        /// </summary>
+        /// <param name="router">라우터</param>
+        public void Unload(IRouter router) =>
+            router.Unload(Server, this);
 
         /// <summary>
         /// 라우터를 가져옵니다

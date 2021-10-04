@@ -2,13 +2,13 @@
 
 namespace LRPC.NET.Http {
     partial class HttpServer {
-        public HttpRouteRepository RouteRepository { get; private set; } = new();
+        public HttpRouteRepository RouteRepository { get; private set; }
 
         /// <summary>
         /// 요청을 처리합니다.
         /// </summary>
         protected virtual async Task OnRequestAsync(HttpListenerContext context) {
-            var req = new HttpRequest(context.Request);
+            var req = new HttpRequest(this, context);
             var res = new HttpResponse(context.Response);
             var func = GetRouteFunc(req.Method, req.Url);
             if (func == null) goto RouteNotFound;
@@ -47,11 +47,17 @@ namespace LRPC.NET.Http {
                 // /dotnet/system?pivots=dotnet
                 uri.AbsolutePath + uri.Query
             };
+
+            // if uri is / root
+            // add (Empty), /
+            if (uri.AbsolutePath == "/" || uri.AbsolutePath.IsNullOrWhiteSpace()) {
+                s.Add("");
+                s.Add("/");
+            }
             // /dotnet/system
             // /dotnet/system/
             // /dotnet/
             // /dotnet
-            // /
             // (Empty)
             var seg = uri.Segments;
             var segLength = seg.Length;

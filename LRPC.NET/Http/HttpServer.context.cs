@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.WebSockets;
 
 namespace LRPC.NET.Http {
     partial class HttpServer {

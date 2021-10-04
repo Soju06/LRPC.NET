@@ -23,18 +23,18 @@
     <ApplicationDefinition Include="Http\HttpRouteRepository.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Library\Dynamitey\InlineLambdas.tt">
+    <AdditionalFiles Include="Library\Dynamitey\InlineLambdas.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>InlineLambdas.cs</LastGenOutput>
-    </Compile>
-    <Compile Include="Library\Dynamitey\Internal\Optimization\InvokeHelper.tt">
+    </AdditionalFiles>
+    <AdditionalFiles Include="Library\Dynamitey\Internal\Optimization\InvokeHelper.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>InvokeHelper.cs</LastGenOutput>
-    </Compile>
-    <Compile Include="Library\Dynamitey\ThisFunctions.tt">
+    </AdditionalFiles>
+    <AdditionalFiles Include="Library\Dynamitey\ThisFunctions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ThisFunctions.cs</LastGenOutput>
-    </Compile>
+    </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -42,5 +42,25 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Library\Dynamitey\InlineLambdas.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>InlineLambdas.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Library\Dynamitey\Internal\Optimization\InvokeHelper.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>InvokeHelper.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Library\Dynamitey\ThisFunctions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ThisFunctions.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Routers\Interface\" />
   </ItemGroup>
 </Project>

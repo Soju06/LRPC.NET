@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Net;
+using System.Net.WebSockets;
 
 namespace LRPC.NET.Http {
     /// <summary>
@@ -8,7 +9,8 @@ namespace LRPC.NET.Http {
     public class HttpRequest {
         readonly HttpListenerRequest Request;
 
-        internal HttpRequest(HttpListenerRequest request) {
+        internal HttpRequest(HttpServer server, HttpListenerContext context) {
+            var request = context.Request;
             Request = request;
             Url = request.Url;
             OriginalUrl = request.RawUrl;
@@ -20,6 +22,9 @@ namespace LRPC.NET.Http {
             RequestId = request.RequestTraceIdentifier;
             User = new(request);
             Content = new(request);
+            Context = context;
+            Server = server;
+            IsWebSocket = request.IsWebSocketRequest;
         }
 
         /// <summary>
@@ -76,5 +81,29 @@ namespace LRPC.NET.Http {
         /// 베이스
         /// </summary>
         public HttpListenerRequest RequestBase => Request;
+
+        /// <summary>
+        /// 컨텍스트
+        /// </summary>
+        public HttpListenerContext Context { get; private set; }
+
+        /// <summary>
+        /// Http 서버
+        /// </summary>
+        public HttpServer Server { get; private set; }
+
+        /// <summary>
+        /// 웹 소켓 여부
+        /// </summary>
+        public bool IsWebSocket { get; private set; }
+
+        /// <summary>
+        /// 웹소켓을 만듭니다.
+        /// </summary>
+        public async Task<WebSocketContext> AcceptWebSocketAsync(string? subProtocol = null) {
+            var context = await Context.AcceptWebSocketAsync(subProtocol);
+            Server.AcceptWebSocket(context.WebSocket);
+            return context;
+        }
     }
 }

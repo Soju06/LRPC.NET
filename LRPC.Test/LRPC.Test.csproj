@@ -6,7 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\LRPC.NET\Soju06\ILovePython.cs" Link="Soju06\ILovePython.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LRPC.NET\LRPC.NET.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Soju06\" />
   </ItemGroup>
 
 </Project>
