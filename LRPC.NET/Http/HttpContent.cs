@@ -11,6 +11,6 @@
         /// <summary>
         /// 콘텐츠 타입
         /// </summary>
-        public virtual string? ContentType { get; protected set; }
+        public virtual string? ContentType { get; set; }
     }
 }

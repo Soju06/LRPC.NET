@@ -14,6 +14,7 @@ namespace LRPC.NET.Http {
         
         public StringContent(string content) {
             Content = content;
+            ContentType = ContentTypes.TXT;
         }
         
         public StringContent(string content, string contentType) {
@@ -51,6 +52,12 @@ namespace LRPC.NET.Http {
         /// </summary>
         /// <param name="html">html</param>
         public static StringContent Html(string html) => new(html, ContentTypes.HTML);
+
+        /// <summary>
+        /// JSON 형식으로 만듭니다.
+        /// </summary>
+        /// <param name="json">json</param>
+        public static StringContent Json(string json) => new(json, ContentTypes.JSON);
 
         public static implicit operator StringContent(string content) => new(content);
     }

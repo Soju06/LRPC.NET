@@ -135,6 +135,7 @@
         /// RAR 아카이브
         /// </summary>
         public const string RAR = "application/x-rar-compressed";
+        public const string TXT = "text/plain";
         /// <summary>
         /// Rich Text Format (RTF)
         /// </summary>

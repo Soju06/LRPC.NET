@@ -40,7 +40,14 @@ internal static class ILovePython {
     public const long _I_LOVE_PYTHON_VERSION_ = 40;
 
     #region Enumerable
-    
+
+    public static bool All<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate) {
+        var i = 0;
+        foreach (var item in source)
+            if (!predicate.Invoke(item, i++)) return false;
+        return true;
+    }
+
     public static TItem[] Copy<TItem>(this TItem[] s) {
         var t = new TItem[s.Length];
         s.CopyTo(t, 0);
@@ -82,6 +89,12 @@ internal static class ILovePython {
     public static void Foreach<T>(this IEnumerable<T> ts, Action<T> func) {
         foreach (var item in ts) 
             func.Invoke(item);
+    }
+    
+    public static void Foreach<T>(this IEnumerable<T> ts, Action<T, int> func) {
+        int i = 0;
+        foreach (var item in ts) 
+            func.Invoke(item, i++);
     }
 
     #endregion

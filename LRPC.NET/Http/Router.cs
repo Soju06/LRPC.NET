@@ -5,23 +5,31 @@ namespace LRPC.NET.Http {
     /// 라우터
     /// </summary>
     public abstract class Router : IRouter {
-        static readonly ParameterInfo[] RouteFuncParameter = typeof(RouteFunc).GetMethod("Invoke").GetParameters();
+        static readonly Type[] RouteFuncParameter = typeof(RouteFunc).GetMethod("Invoke")
+            .GetParameters().CastAll(p => p.ParameterType).ToArray();
+
         readonly List<(string, string)> Funcations = new();
         bool loaded;
 
-        // TODO: HttpServer Server prop
-
+        /// <summary>
+        /// 웹서버
+        /// </summary>
+        protected HttpServer? Http { get; private set; }
 
         // 버그 있음
         public virtual void Load(HttpServer http, HttpRouteRepository repository) {
             if (loaded) return;
             loaded = true;
+            Http = http;
             var type = GetType();
-            type.GetMethods(BindingFlags.Public).Foreach(m => {
+            type.GetMethods().Foreach(m => {
+                if (m.IsStatic || !m.IsPublic) return;
                 var routeAtt = m.GetCustomAttribute<RouteAttribute>();
-                if (routeAtt == null || m.ReturnType != typeof(void) || m.ReturnType != typeof(Task)) return;
+                if (routeAtt == null || m.ReturnType != typeof(Task)) return;
 
-                if (!RouteFuncParameter.SequenceEqual(m.GetParameters())) throw new FormatException(
+                var s = m.GetParameters();
+                if (!RouteFuncParameter.All((a, i) => 
+                s.TryGetValue(i, out var info) && a == info?.ParameterType)) throw new FormatException(
                     $"Route parameter format does not match {m.DeclaringType.FullName}");
 
                 var method = routeAtt.Method;
@@ -35,7 +43,6 @@ namespace LRPC.NET.Http {
                             "There are overlapping routers.");
                         else return;
 
-                    // TODO: void method support
                     var routeFunc = (RouteFunc)Delegate.CreateDelegate(typeof(RouteFunc), this, m);
 
                     Funcations.Add(new(method, loc));
@@ -46,6 +53,7 @@ namespace LRPC.NET.Http {
 
         public virtual void Unload(HttpServer http, HttpRouteRepository repository) {
             if (!loaded) return;
+            Http = http;
             while (Funcations.Count > 0) {
                 var item = Funcations[0];
                 var routes = repository.GetRoute(item.Item1);

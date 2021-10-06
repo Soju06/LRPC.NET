@@ -42,17 +42,18 @@ namespace LRPC.NET.Http {
         /// </summary>
         /// <param name="uri">소스 주소</param>
         protected virtual string[] ParseRouteMatch(Uri uri) {
+            var absolutePath = uri.AbsolutePath;
             // https://asdf.com/dotnet/system?pivots=dotnet
-            var s = new List<string> {
+            var paths = new List<string> {
                 // /dotnet/system?pivots=dotnet
-                uri.AbsolutePath + uri.Query
+                absolutePath.IsNullOrWhiteSpace() ? "/" : absolutePath + uri.Query
             };
 
             // if uri is / root
             // add (Empty), /
-            if (uri.AbsolutePath == "/" || uri.AbsolutePath.IsNullOrWhiteSpace()) {
-                s.Add("");
-                s.Add("/");
+            if (absolutePath == "/" || absolutePath.IsNullOrWhiteSpace()) {
+                paths.Add("");
+                paths.Add("/");
             }
             // /dotnet/system
             // /dotnet/system/
@@ -66,13 +67,13 @@ namespace LRPC.NET.Http {
                 for (var l = 0; l < i; l++) path += seg[l];
                 path += seg[i];
                 if (path.IsNullOrWhiteSpace() || path == "/") continue;
-                s.Add(path);
+                paths.Add(path);
                 if (path[^1] == '/')
-                    s.Add(path[0..^1]);
-                else s.Add(path + "/");
+                    paths.Add(path[0..^1]);
+                else paths.Add(path + "/");
             }
 
-            return s.ToArray();
+            return paths.ToArray();
         }
 
         /// <summary>

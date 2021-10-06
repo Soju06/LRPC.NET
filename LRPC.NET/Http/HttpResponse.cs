@@ -30,6 +30,11 @@ namespace LRPC.NET.Http {
         public string? ContentType { get; set; }
 
         /// <summary>
+        /// 상태 설명
+        /// </summary>
+        public string StatusDescription { get; set; }
+
+        /// <summary>
         /// 콘텐츠
         /// </summary>
         public HttpContent? Content { get; set; }
@@ -71,19 +76,14 @@ namespace LRPC.NET.Http {
         /// 응답을 보냅니다.
         /// </summary>
         public async Task SendAsync() {
-            string? contentType = null;
+            Response.StatusCode = (int)StatusCode;
+            Response.StatusDescription = StatusDescription ?? StatusCode.ToString();
+            Response.ContentType = (Content == null ? ContentType : Content.ContentType) ?? ContentTypes.BIN;
 
-            if (Content != null) {
-                contentType = Content.ContentType;
+            if (Content != null)
                 using (Stream output = Response.OutputStream)
                     await Content.CopyToAsync(output);
-            }
 
-            if (ContentType != null) 
-                contentType = ContentType;
-
-            Response.ContentType = contentType ?? "";
-            Response.StatusCode = (int)StatusCode;
             Response.Close();
         }
     }

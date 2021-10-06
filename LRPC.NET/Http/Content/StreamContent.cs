@@ -4,8 +4,15 @@
     /// </summary>
     public class StreamContent : HttpContent {
         Stream stream;
+
         public StreamContent(Stream stream) {
-            Content = stream;
+            this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            ContentType = ContentTypes.BIN;
+        }
+        
+        public StreamContent(Stream stream, string contentType) {
+            this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            ContentType = contentType;
         }
 
         /// <summary>

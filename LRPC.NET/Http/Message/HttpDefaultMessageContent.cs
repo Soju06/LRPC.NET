@@ -3,6 +3,10 @@
     /// Http 기본 메시지
     /// </summary>
     public class HttpDefaultMessageContent : HttpMessageContnet {
+        public HttpDefaultMessageContent() {
+            ContentType = ContentTypes.HTML;
+        }
+
         protected override async Task ContentCopyToAsync(Stream stream) =>
             await stream.WriteAsync(HTML.Format(Title ?? $"{StatusCode} {Message}", Message, (int)StatusCode, ServerName, RequestId).Encode());
 
