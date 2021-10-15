@@ -2,6 +2,7 @@
 global using System.Web;
 global using System.Net;
 global using System.Text.Json;
+using LRPC.NET.Routers;
 
 namespace LRPC.NET {
     /// <summary>
@@ -17,7 +18,6 @@ namespace LRPC.NET {
         /// </summary>
         public LRPCServer() {
             http = new HttpServer();
-            Init();
         }
 
         /// <summary>
@@ -27,28 +27,42 @@ namespace LRPC.NET {
         /// <param name="prefixes">접두사</param>
         public LRPCServer(params string[] prefixes) { 
             http = new HttpServer(prefixes);
-            Init(); 
         }
 
-        void Init() {
+        public virtual void Start() {
+            Init();
+        }
+
+        protected virtual void Init() {
             InitHttp();
+        }
+        
+        /// <summary>
+        /// LRPC 컴포넌트를 주입합니다
+        /// </summary>
+        public virtual T Inject<T>() where T : LRPComponent, new() {
+            var type = typeof(T);
+            var baseType = type.BaseType;
+            if (baseType == typeof(RouterResources)) 
+                return (T)InjectRouterResource(type);
+            else throw new FormatException("지원하지 않는 컴포넌트입니다.");
         }
 
         /// <summary>
         /// Http 서버
         /// </summary>
-        public HttpServer Http => http;
+        public virtual HttpServer Http => http;
 
         /// <summary>
         /// 서버를 종료하고, 개체를 제거합니다.
         /// </summary>
-        public void Close() =>
+        public virtual void Close() =>
             Dispose();
 
         /// <summary>
         /// 제거되었는지
         /// </summary>
-        public bool IsDisposed => disposed;
+        public virtual bool IsDisposed => disposed;
 
         protected virtual void Dispose(bool disposing) {
             if (!disposed) {

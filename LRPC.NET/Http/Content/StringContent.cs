@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text;
+﻿using System.Text;
 
 namespace LRPC.NET.Http {
     /// <summary>
@@ -9,7 +8,6 @@ namespace LRPC.NET.Http {
         Encoding encoding = Encoding.UTF8;
 
         public StringContent() {
-
         }
         
         public StringContent(string content) {
@@ -58,6 +56,18 @@ namespace LRPC.NET.Http {
         /// </summary>
         /// <param name="json">json</param>
         public static StringContent Json(string json) => new(json, ContentTypes.JSON);
+
+        /// <summary>
+        /// JSON 형식으로 만듭니다.
+        /// </summary>
+        /// <param name="json">json</param>
+        public static StringContent Json<T>(T json) => JsonSerializer.Serialize(json);
+
+        /// <summary>
+        /// JSON 형식으로 만듭니다.
+        /// </summary>
+        /// <param name="json">json</param>
+        public static StringContent Json(object json, Type type) => JsonSerializer.Serialize(json, type);
 
         public static implicit operator StringContent(string content) => new(content);
     }

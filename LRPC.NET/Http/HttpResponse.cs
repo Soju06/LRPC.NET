@@ -1,11 +1,11 @@
-﻿using System.Net;
-
-namespace LRPC.NET.Http {
+﻿namespace LRPC.NET.Http {
     public class HttpResponse {
         readonly HttpListenerResponse Response;
 
-        internal HttpResponse(HttpListenerResponse response) {
-            Response = response;
+        internal HttpResponse(HttpServer server, HttpListenerContext context) {
+            Response = context.Response;
+            Context = context;
+            Server = server;
         }
 
         /// <summary>
@@ -32,12 +32,27 @@ namespace LRPC.NET.Http {
         /// <summary>
         /// 상태 설명
         /// </summary>
-        public string StatusDescription { get; set; }
+        public string? StatusDescription { get; set; }
 
         /// <summary>
         /// 콘텐츠
         /// </summary>
         public HttpContent? Content { get; set; }
+
+        /// <summary>
+        /// 콘텍스트
+        /// </summary>
+        public HttpListenerContext Context { get; set; }
+
+        /// <summary>
+        /// 응답 베이스
+        /// </summary>
+        public HttpListenerResponse ResponseBase => Response;
+
+        /// <summary>
+        /// Http 서버
+        /// </summary>
+        public HttpServer Server { get; private set; }
 
         /// <summary>
         /// 상태 코드
@@ -86,5 +101,32 @@ namespace LRPC.NET.Http {
 
             Response.Close();
         }
+
+        /// <summary>
+        /// 메시지 콘텐츠를 사용합니다.
+        /// </summary>
+        /// <param name="title">타이틀</param>
+        /// <param name="message">메시지</param>
+        /// <param name="statusCode">상태 코드</param>
+        /// <param name="requestId">요청 Id</param>
+        public HttpContent UseMessageContnet(string title, string message, HttpStatusCode statusCode, Guid requestId) =>
+            Content = Server.GetMessageContnet(title, message, statusCode, requestId);
+
+        /// <summary>
+        /// 메시지 콘텐츠를 사용합니다.
+        /// </summary>
+        /// <param name="statusCode">상태 코드</param>
+        /// <param name="requestId">요청 Id</param>
+        /// <param name="message">메시지</param>
+        public HttpContent UseMessageContnet(HttpStatusCode statusCode, Guid requestId, string? message = null) =>
+            Content = Server.GetMessageContnet(statusCode, requestId, message);
+
+        /// <summary>
+        /// 메시지 콘텐츠를 사용합니다.
+        /// </summary>
+        /// <param name="statusCode">상태 코드</param>
+        /// <param name="message">메시지</param>
+        public HttpContent UseMessageContnet(HttpStatusCode statusCode, string? message = null) =>
+            Content = Server.GetMessageContnet(statusCode, Context.Request.RequestTraceIdentifier, message);
     }
 }

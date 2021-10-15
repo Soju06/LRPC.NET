@@ -34,7 +34,7 @@ namespace LRPC.NET.Http {
         /// <param name="statusCode">상태 코드</param>
         /// <param name="requestId">요청 Id</param>
         /// <param name="message">메시지</param>
-        public virtual HttpMessageContnet GetMessageContnet(HttpStatusCode statusCode, Guid requestId, string message = null) =>
+        public virtual HttpMessageContnet GetMessageContnet(HttpStatusCode statusCode, Guid requestId, string? message = null) =>
             GetMessageContnet($"{(int)statusCode} {message ?? statusCode.ToString()}", message ?? statusCode.ToString(), statusCode, requestId);
     }
 }

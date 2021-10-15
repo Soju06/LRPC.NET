@@ -1,17 +1,23 @@
-﻿using StringContent = LRPC.NET.Http.StringContent;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using StringContent = LRPC.NET.Http.StringContent;
 
 namespace LRPC.NET.Routers {
-    internal partial class ServerInfoRouter : Router {
+    /// <summary>
+    /// 원격 개체
+    /// </summary>
+    internal class RemoteRouter : Router {
         protected RouterResources resources;
         protected LRPCServer server;
 
-        public ServerInfoRouter(LRPCServer server, RouterResources resources) {
+        public RemoteRouter(LRPCServer server, RouterResources resources) {
             this.resources = resources;
             this.server = server;
         }
 
-        [Route(HttpMethods.Get, "/")]
-        public virtual async Task GetMain(HttpRequest req, HttpResponse res) {
+        [Route(HttpMethods.Get, "/remote")]
+        public virtual async Task OnRemote(HttpRequest req, HttpResponse res) {
             var contentType = req.Query["type"]?.ToLower();
 
             string? content;
@@ -19,12 +25,9 @@ namespace LRPC.NET.Routers {
                 && (content = resources.HomePage) != null) {
                 res.Content = StringContent.Html(content);
             } else if (contentType == "json") {
-                res.Content = StringContent.Json(new ServerInfo() { 
-                    Name = resources.ServerName,
-                    ProtocolVersion = LRPCEnvironment.ProtocolVersion,
-                    Version = LRPCEnvironment.Version,
-                    RemoteObjectURL = "/remote"
-                });
+                
+            } else if (contentType == "websocket") {
+                await req.AcceptWebSocketAsync();
             } else {
                 res.UseMessageContnet(HttpStatusCode.BadRequest, $"다음의 요청 형식을 지원하지 않습니다. {contentType}");
                 await res.SendAsync(HttpStatusCode.BadRequest);

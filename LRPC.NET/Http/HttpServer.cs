@@ -44,8 +44,11 @@ namespace LRPC.NET.Http {
         public void BeginListen() {
             if (disposed) throw new ObjectDisposedException(nameof(Http));
             if (Http.IsListening) throw new NotSupportedException("The server is already running.");
-            Task.Factory.StartNew(ListenAsync);
+            else Http.Start();
+            Task.Factory.StartNew(BeginListenAsync);
         }
+
+        async Task BeginListenAsync() => await ListenAsync(default, true);
 
         /// <summary>
         /// 서버를 시작합니다.
@@ -62,9 +65,12 @@ namespace LRPC.NET.Http {
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="OperationCanceledException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public async Task ListenAsync(CancellationToken token) {
-            if (Http.IsListening) throw new NotSupportedException("The server is already running.");
-            Http.Start();
+        public async Task ListenAsync(CancellationToken token) => await ListenAsync(token, false);
+
+        async Task ListenAsync(CancellationToken token, bool isBegin) {
+            if (Http.IsListening) {
+                if (!isBegin) throw new NotSupportedException("The server is already running.");
+            } else Http.Start();
             var requests = new HashSet<Task>();
             var ctoken = Cancel.Token;
             for (int i = 0; i < maxConcurrentRequests; i++)

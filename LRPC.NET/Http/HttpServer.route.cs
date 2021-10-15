@@ -9,7 +9,7 @@ namespace LRPC.NET.Http {
         /// </summary>
         protected virtual async Task OnRequestAsync(HttpListenerContext context) {
             var req = new HttpRequest(this, context);
-            var res = new HttpResponse(context.Response);
+            var res = new HttpResponse(this, context);
             var func = GetRouteFunc(req.Method, req.Url);
             if (func == null) goto RouteNotFound;
             else {
