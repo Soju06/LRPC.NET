@@ -16,7 +16,6 @@ namespace LRPC.NET.Http {
         /// </summary>
         protected HttpServer? Http { get; private set; }
 
-        // 버그 있음
         public virtual void Load(HttpServer http, HttpRouteRepository repository) {
             if (loaded) return;
             loaded = true;
@@ -24,29 +23,30 @@ namespace LRPC.NET.Http {
             var type = GetType();
             type.GetMethods().Foreach(m => {
                 if (m.IsStatic || !m.IsPublic) return;
-                var routeAtt = m.GetCustomAttribute<RouteAttribute>();
-                if (routeAtt == null || m.ReturnType != typeof(Task)) return;
+                foreach(var routeAtt in m.GetCustomAttributes<RouteAttribute>()) {
+                    if (routeAtt == null || m.ReturnType != typeof(Task)) return;
 
-                var s = m.GetParameters();
-                if (!RouteFuncParameter.All((a, i) => 
-                s.TryGetValue(i, out var info) && a == info?.ParameterType)) throw new FormatException(
-                    $"Route parameter format does not match {m.DeclaringType.FullName}");
+                    var s = m.GetParameters();
+                    if (!RouteFuncParameter.All((a, i) => 
+                    s.TryGetValue(i, out var info) && a == info?.ParameterType)) throw new FormatException(
+                        $"Route parameter format does not match {m.DeclaringType.FullName}");
 
-                var method = routeAtt.Method;
-                var routes = repository.GetRoute(method);
-                if (routes == null) throw new FormatException(
-                    $"There is no HTTP method of {method} format. {m.DeclaringType.FullName}");
-                else {
-                    var loc = routeAtt.Location;
-                    if (routes.ContainsKey(loc))
-                        if (routeAtt.IgnoreDuplicates) throw new ArgumentException(
-                            "There are overlapping routers.");
-                        else return;
+                    var method = routeAtt.Method;
+                    var routes = repository.GetRoute(method);
+                    if (routes == null) throw new FormatException(
+                        $"There is no HTTP method of {method} format. {m.DeclaringType.FullName}");
+                    else {
+                        var loc = routeAtt.Location;
+                        if (routes.ContainsKey(loc))
+                            if (routeAtt.IgnoreDuplicates) throw new ArgumentException(
+                                "There are overlapping routers.");
+                            else return;
 
-                    var routeFunc = (RouteFunc)Delegate.CreateDelegate(typeof(RouteFunc), this, m);
+                        var routeFunc = (RouteFunc)Delegate.CreateDelegate(typeof(RouteFunc), this, m);
 
-                    Funcations.Add(new(method, loc));
-                    routes.Add(loc, routeFunc);
+                        Funcations.Add(new(method, loc));
+                        routes.Add(loc, routeFunc);
+                    }
                 }
             });
         }

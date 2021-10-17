@@ -10,7 +10,7 @@ namespace LRPC.NET.Routers {
             this.server = server;
         }
 
-        [Route(HttpMethods.Get, "/")]
+        [Route(HttpMethods.Get, "/server-info")]
         public virtual async Task GetMain(HttpRequest req, HttpResponse res) {
             var contentType = req.Query["type"]?.ToLower();
 

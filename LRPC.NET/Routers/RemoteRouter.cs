@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Text;
 using StringContent = LRPC.NET.Http.StringContent;
 
@@ -17,6 +18,25 @@ namespace LRPC.NET.Routers {
         }
 
         [Route(HttpMethods.Get, "/remote")]
+        [Route(HttpMethods.Get, "/r")]
+        public virtual async Task OnRemote(HttpRequest req, HttpResponse res) {
+            var contentType = req.Query["type"]?.ToLower();
+
+            string? content;
+            if ((string.IsNullOrWhiteSpace(contentType) || contentType == "html")
+                && (content = resources.HomePage) != null) {
+                res.Content = StringContent.Html("낫 써포뜨");
+            } else if (contentType == "json") {
+                
+            } else {
+                res.UseMessageContnet(HttpStatusCode.BadRequest, $"다음의 요청 형식을 지원하지 않습니다. {contentType}");
+                await res.SendAsync(HttpStatusCode.BadRequest);
+                return;
+            } await res.SendAsync();
+        }
+
+        [Route(HttpMethods.Get, "/remote/invoke")]
+        [Route(HttpMethods.Get, "/r/i")]
         public virtual async Task OnRemote(HttpRequest req, HttpResponse res) {
             var contentType = req.Query["type"]?.ToLower();
 
@@ -26,8 +46,6 @@ namespace LRPC.NET.Routers {
                 res.Content = StringContent.Html(content);
             } else if (contentType == "json") {
                 
-            } else if (contentType == "websocket") {
-                await req.AcceptWebSocketAsync();
             } else {
                 res.UseMessageContnet(HttpStatusCode.BadRequest, $"다음의 요청 형식을 지원하지 않습니다. {contentType}");
                 await res.SendAsync(HttpStatusCode.BadRequest);
