@@ -7,7 +7,7 @@ namespace LRPC.NET {
     /// </summary>
     public class LRPCMethod : LRPCMethodBase {
         internal LRPCMethod(LRPCMethodRepository repository, Delegate method) : base(repository, method) {
-
+            repository.AddMethod(this);
         }
 
         /// <summary>
@@ -47,6 +47,7 @@ namespace LRPC.NET {
             ReturnType = met.ReturnType;
             Parameters = met.GetParameters();
             MethodId = repository.CreateMethodId(met);
+            TraceInfo = new(met);
         }
 
         readonly Delegate method;
@@ -60,11 +61,13 @@ namespace LRPC.NET {
         /// <summary>
         /// 리턴 타입
         /// </summary>
+        [JsonIgnore()]
         public Type ReturnType { get; private set; }
 
         /// <summary>
         /// 파라미터
         /// </summary>
+        [JsonIgnore()]
         public ParameterInfo[] Parameters { get; private set; }
 
         /// <summary>

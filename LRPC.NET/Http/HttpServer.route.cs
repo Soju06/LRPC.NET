@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
 
 namespace LRPC.NET.Http {
     partial class HttpServer {
@@ -13,9 +13,15 @@ namespace LRPC.NET.Http {
             var func = GetRouteFunc(req.Method, req.Url);
             if (func == null) goto RouteNotFound;
             else {
-                var f = func?.Invoke(req, res);
-                if (f == null) goto RouteNotFound;
-                else await f;
+                try {
+                    var f = func?.Invoke(req, res);
+                    if (f == null) goto RouteNotFound;
+                    else {
+                        res.ResponseBase.Close();
+                    }
+                } catch (Exception ex) { 
+                    Debug.WriteLine($"route exception, func: {func.Method.DeclaringType.FullName}.{func.Method.Name}\nexception: {ex}");
+                }
             }
 
             return;

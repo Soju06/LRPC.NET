@@ -44,6 +44,18 @@ namespace LRPC.NET.Http {
 
                         var routeFunc = (RouteFunc)Delegate.CreateDelegate(typeof(RouteFunc), this, m);
 
+                        if (!routeAtt.IgnoreRouterException) {
+                            var capturedFunc = routeFunc;
+                            routeFunc = async (HttpRequest req, HttpResponse res) => { 
+                                try {
+                                    await capturedFunc.Invoke(req, res);
+                                } catch (Exception ex) {
+                                    var met = capturedFunc.Method;
+                                    OnRouterException(met.DeclaringType.FullName + "." + met.Name, ex);
+                                }
+                            };
+                        }
+
                         Funcations.Add(new(method, loc));
                         routes.Add(loc, routeFunc);
                     }
@@ -60,6 +72,16 @@ namespace LRPC.NET.Http {
                 if (routes == null) continue;
                 routes.Remove(item.Item2);
             } loaded = false;
+        }
+
+
+        /// <summary>
+        /// 라우터 예외 매소드
+        /// </summary>
+        /// <param name="routerName">라우터 이름</param>
+        /// <param name="ex">예외</param>
+        protected virtual void OnRouterException(string routerName, Exception ex) {
+
         }
     }
 }

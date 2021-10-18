@@ -14,6 +14,7 @@ namespace LRPC.NET {
         protected virtual void InitHttp() {
             Inject<DefaultRouterResources>();
             Http.RouteRepository.Route(new ServerInfoRouter(this, RouterResources));
+            Http.RouteRepository.Route(new RemoteRouter(this, RouterResources));
             http.BeginListen();
         }
 

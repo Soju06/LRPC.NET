@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace LRPC.NET {
-    public class LRPCMethodRepository : Dictionary<Guid, LRPCMethod> {
+    public class LRPCMethodRepository : Dictionary<Guid, LRPCMethodBase> {
         public LRPCMethodRepository() {
 
         }
@@ -11,8 +11,8 @@ namespace LRPC.NET {
         /// <summary>
         /// 현재 개체를 직렬화 가능한 배열을 만듭니다.
         /// </summary>
-        public object GetSerializableArray() {
-            var methods = new LRPCMethod[Count];
+        public LRPCMethodBase[] GetSerializableArray() {
+            var methods = new LRPCMethodBase[Count];
             Values.CopyTo(methods, 0);
             return methods;
         }
@@ -22,7 +22,7 @@ namespace LRPC.NET {
         /// </summary>
         /// <param name="method">매소드</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public void AddMethod(LRPCMethod method) {
+        public void AddMethod(LRPCMethodBase method) {
             if (method == null) throw new ArgumentNullException("method");
             Add(method.MethodId, method);
         }
@@ -35,7 +35,7 @@ namespace LRPC.NET {
         /// <returns>리턴값</returns>
         /// <exception cref="KeyNotFoundException"></exception>
         public object Invoke(Guid id, params object[] parameters) {
-            if (TryGetValue(id, out LRPCMethod method))
+            if (TryGetValue(id, out LRPCMethodBase method))
                 return method.Invoke(parameters: parameters);
             else throw new KeyNotFoundException($"method does not exist for id {id}");
         }
@@ -45,8 +45,8 @@ namespace LRPC.NET {
         ///     리턴값: 매소드가 없으면 null를 반환합니다.
         /// </summary>
         /// <param name="id"></param>
-        public LRPCMethod? Find(Guid id) {
-            if (TryGetValue(id, out LRPCMethod method)) return method;
+        public LRPCMethodBase? Find(Guid id) {
+            if (TryGetValue(id, out LRPCMethodBase method)) return method;
             return null;
         }
 
@@ -109,7 +109,8 @@ namespace LRPC.NET {
     public static class LRPCMethodRepositoryStatic {
         public static string GetJsonArray(this LRPCMethodRepository repository, JsonSerializerOptions? options = null) {
             if (repository == null) throw new ArgumentNullException(nameof(repository));
-            return JsonSerializer.Serialize(repository.GetSerializableArray(), typeof(LRPCMethodRepository), options);
+            var array = repository.GetSerializableArray();
+            return JsonSerializer.Serialize(array, options);
         }
     }
 }

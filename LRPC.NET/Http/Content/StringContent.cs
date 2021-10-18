@@ -49,7 +49,9 @@ namespace LRPC.NET.Http {
         /// HTML 형식으로 만듭니다.
         /// </summary>
         /// <param name="html">html</param>
-        public static StringContent Html(string html) => new(html, ContentTypes.HTML);
+        public static StringContent Html(string html, Encoding? encodingFormat = null, bool appendHtmlMeta = true) => 
+            new((appendHtmlMeta ? $"<meta charset=\"{(encodingFormat ?? Encoding.UTF8).WebName}\">" : null) + html,
+                ContentTypes.HTML, encodingFormat ?? Encoding.UTF8);
 
         /// <summary>
         /// JSON 형식으로 만듭니다.
