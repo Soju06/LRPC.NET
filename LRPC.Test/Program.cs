@@ -1,4 +1,6 @@
 ﻿using LRPC.NET;
+using LRPC.NET.Object;
+using System.Text.Json;
 
 new LRPCServer("http://localhost:8080/").Return(server => {
     server.Methods.CreateMethod(() => { 
