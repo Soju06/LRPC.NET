@@ -53,6 +53,10 @@
         /// </summary>
         public const string Array = "array";
         /// <summary>
+        /// dynamic
+        /// </summary>
+        public const string Dynamic = "dynamic";
+        /// <summary>
         /// object
         /// </summary>
         public const string Object = "object";
@@ -114,6 +118,10 @@
         /// array
         /// </summary>
         Array,
+        /// <summary>
+        /// dynamic
+        /// </summary>
+        Dynamic,
         /// <summary>
         /// object
         /// </summary>

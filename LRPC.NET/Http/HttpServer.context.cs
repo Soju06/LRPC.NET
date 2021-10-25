@@ -1,7 +1,4 @@
-﻿using System.Net;
-using System.Net.WebSockets;
-
-namespace LRPC.NET.Http {
+﻿namespace LRPC.NET.Http {
     partial class HttpServer {
         /// <summary>
         /// 메시지 콘텐츠 탬플릿 타입

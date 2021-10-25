@@ -1,10 +1,10 @@
-﻿namespace LRPC.NET.Http {
+﻿namespace LRPC.NET.Http.Content {
     /// <summary>
     /// 파일 콘텐츠
     /// </summary>
     public class FileContent : HttpContent {
         public FileContent(string fileName) {
-            if (!File.Exists(fileName)) throw new 
+            if (!File.Exists(fileName)) throw new
                     FileNotFoundException("file not found.", fileName);
             FileName = fileName;
         }

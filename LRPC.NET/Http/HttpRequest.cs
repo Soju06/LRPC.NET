@@ -1,5 +1,4 @@
 ﻿using System.Collections.Specialized;
-using System.Net;
 using System.Net.WebSockets;
 
 namespace LRPC.NET.Http {

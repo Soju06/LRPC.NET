@@ -62,6 +62,36 @@ namespace LRPC.NET.Object {
             @object = value;
             TypeName = typeName;
         }
+        
+        public LRPCNumber(JsonElement element) {
+            @object = 0;
+            var type = element.GetProperty("_type").GetString() ?? "";
+            if (!Types.ContainsKey(type)) throw new ArgumentException("올바르지 않은 타입입니다.");
+            TypeName = type;
+            var value = element.GetProperty("value");
+            var ntype = CheckNumberType(value.GetRawText());
+            if (ntype < 0) throw new ArgumentException("자료가 숫자형이 아닙니다.");
+            else if (ntype == 0) Value = value.GetDouble();
+            else if (ntype == 1) {
+                Value = value.GetInt64();
+            } else Value = value.GetUInt64();
+        }
+
+        static int CheckNumberType(string raw) {
+            var length = raw.Length;
+            bool dot = false, minus = false;
+            for (int i = 0; i < length; i++) {
+                var item = raw[i];
+                if (char.IsDigit(item)) continue;
+                else if (item == '.') {
+                    if (dot) return -1;
+                    dot = true;
+                } else if (i == 0 && item == '-')
+                    minus = true;
+                else return -1;
+            }
+            return dot ? 0 : minus ? 1 : 2;
+        }
 
         /// <summary>
         /// byte 여부
@@ -132,10 +162,10 @@ namespace LRPC.NET.Object {
             if (value != null) {
                 if (string.IsNullOrWhiteSpace(TypeName)) {
                     TypeName = DefaultTypeName;
-                    @object = Convert.ChangeType(value, DefaultType);
+                    @object = System.Convert.ChangeType(value, DefaultType);
                 } else {
                     if (Types.TryGetValue(TypeName, out var type))
-                        @object = Convert.ChangeType(value, type);
+                        @object = System.Convert.ChangeType(value, type);
                     else throw new ProtocolViolationException("명시된 타입과 값의 타입이 일치하지 않습니다.");
                 }
             } else @object = DefaultValue;
@@ -213,8 +243,10 @@ namespace LRPC.NET.Object {
         public sbyte ToSByte(IFormatProvider provider) => SByte();
         public float ToSingle(IFormatProvider provider) => Single();
         public string ToString(IFormatProvider provider) => @object.ToString();
-        public object ToType(Type conversionType, IFormatProvider provider) =>
-            Convert.ChangeType(@object, conversionType);
+        public object ToType(Type conversionType, IFormatProvider provider) {
+            if(conversionType == typeof(LRPCNumber)) return new LRPCNumber(@object, TypeName);
+            return System.Convert.ChangeType(@object, conversionType);
+        }
         public ushort ToUInt16(IFormatProvider provider) => UShort();
         public uint ToUInt32(IFormatProvider provider) => UInt();
         public ulong ToUInt64(IFormatProvider provider) => ULong();

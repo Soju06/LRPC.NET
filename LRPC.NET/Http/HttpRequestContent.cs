@@ -1,7 +1,4 @@
-﻿using System.Net;
-using System.Text.Json;
-
-namespace LRPC.NET.Http {
+﻿namespace LRPC.NET.Http {
     /// <summary>
     /// http 요청 콘텐츠
     /// </summary>

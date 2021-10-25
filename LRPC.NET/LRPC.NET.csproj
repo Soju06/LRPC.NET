@@ -7,11 +7,6 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Library\Dynamitey\InlineLambdas.tt" />
-    <None Remove="Library\Dynamitey\Internal\Optimization\InvokeHelper.tt" />
-    <None Remove="Library\Dynamitey\ThisFunctions.tt" />
-  </ItemGroup>
-  <ItemGroup>
     <ApplicationDefinition Include="Http\Content\FileContent.cs" />
     <ApplicationDefinition Include="Http\Content\StreamContent.cs" />
     <ApplicationDefinition Include="Http\Content\StringContent.cs" />
@@ -23,42 +18,16 @@
     <ApplicationDefinition Include="Http\HttpRouteRepository.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="Library\Dynamitey\InlineLambdas.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>InlineLambdas.cs</LastGenOutput>
-    </AdditionalFiles>
-    <AdditionalFiles Include="Library\Dynamitey\Internal\Optimization\InvokeHelper.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>InvokeHelper.cs</LastGenOutput>
-    </AdditionalFiles>
-    <AdditionalFiles Include="Library\Dynamitey\ThisFunctions.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ThisFunctions.cs</LastGenOutput>
-    </AdditionalFiles>
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="ImpromptuInterface" Version="7.0.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Library\Dynamitey\InlineLambdas.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>InlineLambdas.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Library\Dynamitey\Internal\Optimization\InvokeHelper.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>InvokeHelper.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Library\Dynamitey\ThisFunctions.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ThisFunctions.tt</DependentUpon>
-    </Compile>
     <Compile Update="Routers\Resources\DefaultResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

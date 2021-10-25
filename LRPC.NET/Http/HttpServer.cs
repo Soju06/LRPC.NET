@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace LRPC.NET.Http {
+﻿namespace LRPC.NET.Http {
     /// <summary>
     /// Http 서버
     /// </summary>

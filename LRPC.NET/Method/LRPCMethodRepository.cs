@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace LRPC.NET {
-    public class LRPCMethodRepository : Dictionary<Guid, LRPCMethodBase> {
+    public class LRPCMethodRepository : DoubleDictionary<Guid, string, LRPCMethodBase> {
         public LRPCMethodRepository() {
 
         }
@@ -24,7 +24,7 @@ namespace LRPC.NET {
         /// <exception cref="ArgumentNullException"></exception>
         public void AddMethod(LRPCMethodBase method) {
             if (method == null) throw new ArgumentNullException("method");
-            Add(method.MethodId, method);
+            //Add(method.MethodId, method);
         }
 
         /// <summary>

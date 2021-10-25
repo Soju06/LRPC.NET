@@ -642,40 +642,6 @@ internal static class Ran {
 
 #endregion
 
-#region Object
-
-internal class Object<T, T2> {
-    public Object(T t, T2 t2) { One = t; Two = t2; }
-    public T One { get; set; }
-    public T2 Two { get; set; }
-}
-
-internal class Object<T, T2, T3> {
-    public Object(T t, T2 t2, T3 t3) { One = t; Two = t2; Three = t3; }
-    public T One { get; set; }
-    public T2 Two { get; set; }
-    public T3 Three { get; set; }
-}
-
-internal class Object<T, T2, T3, T4> {
-    public Object(T t, T2 t2, T3 t3, T4 t4) { One = t; Two = t2; Three = t3; Four = t4; }
-    public T One { get; set; }
-    public T2 Two { get; set; }
-    public T3 Three { get; set; }
-    public T4 Four { get; set; }
-}
-
-internal class Object<T, T2, T3, T4, T5> {
-    public Object(T t, T2 t2, T3 t3, T4 t4, T5 t5) { One = t; Two = t2; Three = t3; Four = t4; Five = t5; }
-    public T One { get; set; }
-    public T2 Two { get; set; }
-    public T3 Three { get; set; }
-    public T4 Four { get; set; }
-    public T5 Five { get; set; }
-}
-
-#endregion Object 
-
 #pragma warning restore IDE0056 // 인덱스 연산자 사용
 #pragma warning restore CS8632 // nullable 참조 형식에 대한 주석은 코드에서 '#nullable' 주석 컨텍스트 내에만 사용되어야 합니다.
 #pragma warning restore IDE0079 // 불필요한 비표시 오류(Suppression) 제거
